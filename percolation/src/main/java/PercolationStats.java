@@ -2,6 +2,12 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
+/**
+ * Estimates the percolation threshold by means of Monte Carlo simulations. Solution implemented as an exercise
+ * for the Princeton Course Algorithms I
+ * <p>
+ * http://coursera.cs.princeton.edu/algs4/checklists/percolation.html
+ */
 public class PercolationStats {
 
     private final int n;

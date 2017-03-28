@@ -1,12 +1,6 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
-/**
- * Estimates the percolation threshold by means of Monte Carlo simulations. Solution implemented as an exercise
- * for the Princeton Course Algorithms I
- * <p>
- * http://coursera.cs.princeton.edu/algs4/checklists/percolation.html
- */
 public class Percolation {
 
     private final int n;

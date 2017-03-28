@@ -1,22 +1,53 @@
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
+/**
+ * Estimates the percolation threshold by means of Monte Carlo simulations. Solution implemented as an exercise
+ * for the Princeton Course Algorithms I
+ * <p>
+ * http://coursera.cs.princeton.edu/algs4/checklists/percolation.html
+ */
 public class Percolation {
 
     private final int n;
+    private final WeightedQuickUnionUF grid;
+    private final boolean[] sites;
+    private final int topSite;
+    private final int bottomSite;
+    private int numberOfOpenSites = 0;
 
     /**
      * Create n-by-n grid, with all sites blocked.
+     * <p>
+     * Internally, this class uses one virtual row at the top and one virtual row at the bottom.
+     * <p>
+     * The leftmost site of the top virtual row (topSite) is automatically connected to all sites in the row
+     * below.
+     * <p>
+     * The leftmost site of the bottom virtual site (bottomSite) is automatically connected to all sites in the
+     * row above
+     * <p>
+     * This simplifies the implementation by enabling us to check for percolation by simply checking if topSite and
+     * bottomSite are connected.
      *
-     * @param n grid width/height
+     * @param n grid size
      */
     public Percolation(int n) {
-        if (n > 0) {
-            this.n = n;
-        } else {
+        if (n <= 0)
             throw new IllegalArgumentException("n must be a positive integer");
-        }
+
+        this.n = n;
+
+        this.grid = new WeightedQuickUnionUF(n * (n + 2));
+        this.sites = new boolean[n * (n + 2)];
+
+        this.topSite = rowColTo1D(-1, 1);
+        this.bottomSite = rowColTo1D(n, 1);
+
+        connectTopToFirstRow();
+        connectBottomToLastRow();
     }
-    // create n-by-n grid, with all sites blocked
+
 
     /**
      * Open site (row, col) if it is not open already.
@@ -25,10 +56,21 @@ public class Percolation {
      * @param col the column of the site to open.
      */
     public void open(int row, int col) {
-        if (row < n || col < n) {
-            throw new IllegalArgumentException(String.format("(%d,%d) is outside the grid (%d,$d))", row, col, n, n));
+        assertInsideGrid(row, col);
+
+        int i = rowColTo1D(row, col);
+
+        if (!sites[i]) {
+
+            sites[i] = true;
+
+            connectIfInsideAndOpen(row, col, row, col - 1);
+            connectIfInsideAndOpen(row, col, row, col + 1);
+            connectIfInsideAndOpen(row, col, row - 1, col);
+            connectIfInsideAndOpen(row, col, row + 1, col);
+
+            numberOfOpenSites++;
         }
-        throw new RuntimeException();
     }
 
     /**
@@ -38,8 +80,10 @@ public class Percolation {
      * @param col the column of the site to check.
      * @return true iff site is open.
      */
-    public boolean isOpen(int row, int col)  {
-        return false;
+    public boolean isOpen(int row, int col) {
+        assertInsideGrid(row, col);
+
+        return sites[rowColTo1D(row, col)];
     }
 
     /**
@@ -49,8 +93,10 @@ public class Percolation {
      * @param col the column of the site to check.
      * @return true iff site is full.
      */
-    public boolean isFull(int row, int col)  {
-        return false;
+    public boolean isFull(int row, int col) {
+        assertInsideGrid(row, col);
+
+        return isOpen(row, col) && grid.connected(topSite, rowColTo1D(row, col));
     }
 
     /**
@@ -59,7 +105,7 @@ public class Percolation {
      * @return the number of open sites.
      */
     public int numberOfOpenSites() {
-        return 0;
+        return numberOfOpenSites;
     }
 
     /**
@@ -67,16 +113,47 @@ public class Percolation {
      *
      * @return true iff system percolates.
      */
-    public boolean percolates()  {
-        return false;
+    public boolean percolates() {
+        return grid.connected(topSite, bottomSite);
     }
 
-    /**
-     * The test client.
-     *
-     * @param args
-     */
-    public static void main(String[] args)   {
+    private int rowColTo1D(final int row, final int col) {
+        return (row + 1) * n + col - 1;
+    }
 
+    private boolean insideGrid(final int row, final int col) {
+        return row <= n && col <= n && row >= 1 && col >= 1;
+    }
+
+    private void assertInsideGrid(int row, int col) {
+        if (!insideGrid(row, col)) {
+            throw new IndexOutOfBoundsException(String.format("(%d,%d) is outside the grid (%d,%d))", row, col, n, n));
+        }
+    }
+
+    private void connectIfInsideAndOpen(final int row1, final int col1, final int row2, final int col2) {
+        if (insideGrid(row2, col2) && isOpen(row2, col2)) {
+            grid.union(rowColTo1D(row1, col1), rowColTo1D(row2, col2));
+        }
+    }
+
+    private void connectTopToFirstRow() {
+        for (int column = 1; column <= n; column++) {
+            grid.union(topSite, siteOfFirstRow(column));
+        }
+    }
+
+    private void connectBottomToLastRow() {
+        for (int column = 1; column <= n; column++) {
+            grid.union(bottomSite, siteOfLastRow(column));
+        }
+    }
+
+    private int siteOfLastRow(int column) {
+        return rowColTo1D(n, column);
+    }
+
+    private int siteOfFirstRow(int column) {
+        return rowColTo1D(1, column);
     }
 }

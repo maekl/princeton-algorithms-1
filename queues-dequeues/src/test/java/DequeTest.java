@@ -19,6 +19,63 @@ public class DequeTest {
         new Deque<>().removeLast();
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorNextThrowsNoSuchElementExceptionIfEmpty() {
+        new Deque<>().iterator().next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorNextThrowsNoSuchElementExceptionIfEmpty2() {
+        final Deque<Integer> deque = new Deque<>();
+
+        deque.addFirst(1);
+        deque.removeLast();
+
+        new Deque<>().iterator().next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorNextThrowsNoSuchElementExceptionIfEmpty3() {
+        final Deque<Integer> deque = new Deque<>();
+
+        deque.addFirst(1);
+
+        final Iterator<Integer> iterator = deque.iterator();
+
+        iterator.next();
+        iterator.next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorNextThrowsNoSuchElementExceptionIfEmpty4() {
+        final Deque<Integer> deque = new Deque<>();
+
+        deque.addFirst(1);
+        deque.addFirst(1);
+
+        final Iterator<Integer> iterator = deque.iterator();
+
+        iterator.next();
+        iterator.next();
+        iterator.next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorNextThrowsNoSuchElementExceptionIfEmpty5() {
+        final Deque<Integer> deque = new Deque<>();
+
+        deque.addFirst(1);
+        deque.addFirst(1);
+        deque.addFirst(1);
+
+        final Iterator<Integer> iterator = deque.iterator();
+
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public void removeNotSupportedOnIterator() {
         new Deque<>().iterator().remove();

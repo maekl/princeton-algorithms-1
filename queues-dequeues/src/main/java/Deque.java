@@ -164,13 +164,13 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         @Override
-        public void addFirst(Item item) {
-            ops = new Multiple(item, this.item);
+        public void addFirst(final Item first) {
+            ops = new Multiple(first, this.item);
         }
 
         @Override
-        public void addLast(Item item) {
-            ops = new Multiple(this.item, item);
+        public void addLast(final Item last) {
+            ops = new Multiple(this.item, last);
         }
 
         @Override

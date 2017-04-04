@@ -5,7 +5,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     private final DequeOps<Item> empty = new Empty();
 
-    private DequeOps<Item> state = empty;
+    private DequeOps<Item> ops = empty;
 
     /**
      * Construct an empty deque
@@ -19,7 +19,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return true if deque is empty
      */
     public boolean isEmpty() {
-        return state.size() == 0;
+        return ops.size() == 0;
     }
 
     /**
@@ -28,7 +28,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return the number of items on the deque
      */
     public int size() {
-        return state.size();
+        return ops.size();
     }
 
     /**
@@ -41,7 +41,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NullPointerException("Null items not supported");
         }
 
-        state.addFirst(item);
+        ops.addFirst(item);
     }
 
     /**
@@ -54,7 +54,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NullPointerException("Null items not supported");
         }
 
-        state.addLast(item);
+        ops.addLast(item);
 
     }
 
@@ -68,7 +68,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException("removeFirst called on empty Deque");
         }
 
-        return state.removeFirst();
+        return ops.removeFirst();
     }
 
     /**
@@ -81,7 +81,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException("removeLast called on empty Deque");
         }
 
-        return state.removeLast();
+        return ops.removeLast();
     }
 
     /**
@@ -90,7 +90,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return iterator over items
      */
     public Iterator<Item> iterator() {
-        return state.iterator();
+        return ops.iterator();
     }
 
     /**
@@ -113,7 +113,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public void addFirst(final Item item) {
-            state = new Singleton(item);
+            ops = new Singleton(item);
         }
 
         @Override
@@ -165,17 +165,17 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public void addFirst(Item item) {
-            state = new Multiple(item, this.item);
+            ops = new Multiple(item, this.item);
         }
 
         @Override
         public void addLast(Item item) {
-            state = new Multiple(this.item, item);
+            ops = new Multiple(this.item, item);
         }
 
         @Override
         public Item removeFirst() {
-            state = empty;
+            ops = empty;
             return item;
         }
 
@@ -250,7 +250,7 @@ public class Deque<Item> implements Iterable<Item> {
             this.first = this.first.next;
 
             if (this.first == this.last) {
-                state = new Singleton(this.first.item);
+                ops = new Singleton(this.first.item);
             }
 
             this.size--;
@@ -266,7 +266,7 @@ public class Deque<Item> implements Iterable<Item> {
             this.last = last.prev;
 
             if (this.first == this.last) {
-                state = new Singleton(this.first.item);
+                ops = new Singleton(this.first.item);
             }
 
             this.size--;

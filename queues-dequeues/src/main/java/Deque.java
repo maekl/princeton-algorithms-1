@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 public class Deque<Item> implements Iterable<Item> {
 
     private final DequeOps<Item> empty = new Empty();
+    private final Singleton singleton = new Singleton();
+    private final Multiple multiple = new Multiple();
 
     private DequeOps<Item> ops = empty;
 
@@ -113,7 +115,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public void addFirst(final Item item) {
-            ops = new Singleton(item);
+            ops = singleton.init(item);
         }
 
         @Override
@@ -157,26 +159,32 @@ public class Deque<Item> implements Iterable<Item> {
      */
     private final class Singleton implements DequeOps<Item> {
 
-        private final Item item;
+        private Item item;
 
-        Singleton(final Item item) {
-            this.item = item;
+        public DequeOps<Item> init(final Item t) {
+            this.item = t;
+            return this;
         }
 
         @Override
         public void addFirst(final Item first) {
-            ops = new Multiple(first, this.item);
+            ops = multiple.init(first, this.item);
         }
 
         @Override
         public void addLast(final Item last) {
-            ops = new Multiple(this.item, last);
+            ops = multiple.init(this.item, last);
         }
 
         @Override
         public Item removeFirst() {
             ops = empty;
-            return item;
+
+            final Item i = this.item;
+
+            this.item = null;
+
+            return i;
         }
 
         @Override
@@ -222,11 +230,13 @@ public class Deque<Item> implements Iterable<Item> {
         private Node last;
         private int size;
 
-        Multiple(final Item first, final Item last) {
-            this.first = new Node(first, last);
+        public DequeOps<Item> init(final Item firstItem, final Item lastItem) {
+            this.first = new Node(firstItem, lastItem);
 
             this.last = this.first.next;
             this.size = 2;
+
+            return this;
         }
 
 
@@ -250,7 +260,7 @@ public class Deque<Item> implements Iterable<Item> {
             this.first = this.first.next;
 
             if (this.first == this.last) {
-                ops = new Singleton(this.first.item);
+                toSingletonDeque();
             }
 
             this.size--;
@@ -266,12 +276,18 @@ public class Deque<Item> implements Iterable<Item> {
             this.last = last.prev;
 
             if (this.first == this.last) {
-                ops = new Singleton(this.first.item);
+                toSingletonDeque();
             }
 
             this.size--;
 
             return item;
+        }
+
+        private void toSingletonDeque() {
+            ops = singleton.init(this.first.item);
+            this.first = null;
+            this.last = null;
         }
 
         @Override

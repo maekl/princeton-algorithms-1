@@ -6,22 +6,40 @@ import java.util.Iterator;
 
 public class Permutation {
 
-    private final RandomizedQueue<String> q = new RandomizedQueue<>();
+    private static class StdInIterator implements Iterator<String> {
 
-    private Permutation(int k) {
-        for (int i = 0; !StdIn.isEmpty(); i++) {
-            final String item = StdIn.readLine();
+        @Override
+        public boolean hasNext() {
+            return !StdIn.isEmpty();
+        }
 
-            if (i < k) {
-                q.enqueue(item);
-            } else if (StdRandom.uniform(i + 1) < k) {
-                q.dequeue();
-                q.enqueue(item);
-            }
+        @Override
+        public String next() {
+            return StdIn.readString();
         }
     }
 
-    private Iterator<String> result() {
+    private final RandomizedQueue<String> q = new RandomizedQueue<>();
+
+    public Permutation(int k, Iterator<String> input) {
+
+        int i = 0;
+
+        while (input.hasNext()) {
+            final String next = input.next();
+
+            if (i < k) {
+                q.enqueue(next);
+            } else if (StdRandom.uniform(i + 1) < k) {
+                q.dequeue();
+                q.enqueue(next);
+            }
+
+            i++;
+        }
+    }
+
+    public Iterator<String> result() {
         return q.iterator();
     }
 
@@ -29,7 +47,7 @@ public class Permutation {
 
         final int k = Integer.parseInt(args[0]);
 
-        final Permutation p = new Permutation(k);
+        final Permutation p = new Permutation(k, new StdInIterator());
 
         p.result().forEachRemaining(StdOut::println);
     }

@@ -21,7 +21,7 @@ public class Permutation {
 
     private final RandomizedQueue<String> q = new RandomizedQueue<>();
 
-    public Permutation(int k, Iterator<String> input) {
+    private Permutation(int k, Iterator<String> input) {
 
         int i = 0;
 
@@ -39,7 +39,7 @@ public class Permutation {
         }
     }
 
-    public Iterator<String> result() {
+    private Iterator<String> result() {
         return q.iterator();
     }
 
@@ -49,6 +49,10 @@ public class Permutation {
 
         final Permutation p = new Permutation(k, new StdInIterator());
 
-        p.result().forEachRemaining(StdOut::println);
+        final Iterator<String> result = p.result();
+
+        while (result.hasNext()) {
+            StdOut.println(result.next());
+        }
     }
 }

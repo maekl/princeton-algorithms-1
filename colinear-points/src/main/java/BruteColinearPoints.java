@@ -5,7 +5,19 @@ public class BruteColinearPoints {
      * @param points the points.
      */
     public BruteColinearPoints(Point[] points) {
+        if (points == null || containsNull(points)) {
+            throw new NullPointerException();
+        }
+    }
 
+    private boolean containsNull(Point[] points) {
+
+        for (final Point point : points) {
+            if (point == null)
+                return true;
+        }
+
+        return false;
     }
 
     /**

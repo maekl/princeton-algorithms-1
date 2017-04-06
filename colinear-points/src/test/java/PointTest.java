@@ -100,6 +100,24 @@ public class PointTest {
             assert(new Point(x0, y0).slopeTo(new Point(x1, y1)) == ((double) y1 - y0) / (x1 - x0));
     }
 
+    @Property(trials = 1000)
+    public void slopOfItselfIsNegativeInfinity2(
+            @InRange(minInt = 0, maxInt = 100) int x0,
+            @InRange(minInt = 0, maxInt = 100) int y0,
+            @InRange(minInt = 0, maxInt = 100) int x1,
+            @InRange(minInt = 0, maxInt = 100) int y1,
+            @InRange(minInt = 0, maxInt = 100) int x2,
+            @InRange(minInt = 0, maxInt = 100) int y2) {
+
+        Point point0 = new Point(x0, y0);
+        Point point1 = new Point(x1, y1);
+        Point point2 = new Point(x2, y2);
+
+        assert (point0.slopeOrder().compare(point1, point2) == 0) == (point0.slopeTo(point1) == point0.slopeTo(point2));
+        assert((point0.slopeOrder().compare(point1, point2) > 0) == (point0.slopeTo(point1) > point0.slopeTo(point2)));
+        assert((point0.slopeOrder().compare(point1, point2) < 0) == (point0.slopeTo(point1) < point0.slopeTo(point2)));
+    }
+
     public class Points extends Generator<Point> {
 
         protected Points() {

@@ -25,6 +25,16 @@ public class FastCollinearPointsTest extends CollinearTest {
         new FastCollinearPoints(new Point[]{point(1, 1), point(1, 1), point(1, 1), point(1, 1)});
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorThrowsIAEIfPointsAreRepeated2() {
+        new FastCollinearPoints(new Point[]{
+                point(27039, 21985),
+                point(11481, 20878),
+                point(27039, 21985),
+                point(17443, 7822),
+                point(5446, 7822)});
+    }
+
     @Test
     public void testFourHorizontalPoints() {
         Point[] points = new Point[]{

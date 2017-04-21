@@ -39,10 +39,6 @@ public class FastCollinearPoints {
 
                 final double slope = origin.slopeTo(sorted[j + 1]);
 
-                if (slope == Double.NEGATIVE_INFINITY) {
-                    throw new IllegalArgumentException();
-                }
-
                 offset = adjacentCollinearPoints(sorted, origin, slope, j);
 
                 if (offset >= 4) {
@@ -62,7 +58,17 @@ public class FastCollinearPoints {
 
         int index = start;
 
-        while (index < sorted.length && Double.compare(slope, origin.slopeTo(sorted[index])) == 0) {
+        while (index < sorted.length) {
+
+            final double d2 = origin.slopeTo(sorted[index]);
+
+            if (Double.compare(d2, Double.NEGATIVE_INFINITY) == 0) {
+                throw new IllegalArgumentException();
+            }
+
+            if (Double.compare(slope, d2) != 0)
+                break;
+
             index++;
         }
 

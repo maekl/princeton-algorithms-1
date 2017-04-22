@@ -27,53 +27,45 @@ public class FastCollinearPoints {
 
         for (int i = 0; i < length - 1; i++) {
 
+            if (sortedAux[i].compareTo(sortedAux[i + 1]) == 0)
+                throw new IllegalArgumentException();
+
             final Point[] sorted = sortedAux.clone();
 
             final Point origin = sorted[i];
 
+
             Arrays.sort(sorted, origin.slopeOrder());
 
-            int offset;
+            for (int j = 1, offset; j < length - 1; j += offset) {
 
-            for (int j = 1; j < length - 1; j += offset) {
+                double slope = origin.slopeTo(sorted[j]);
 
-                final double slope = origin.slopeTo(sorted[j + 1]);
+                int k = j + 1;
 
-                offset = adjacentCollinearPoints(sorted, origin, slope, j);
+                while (k < length) {
 
-                if (offset >= 4) {
+                    if (Double.compare(slope, sorted[j].slopeTo(sorted[k])) != 0)
+                        break;
+
+                    k++;
+                }
+
+                if (k - j + 1 >= 4) {
 
                     final Point start = sorted[j];
-                    final Point end = sorted[offset + j - 2];
+                    final Point end = sorted[k - 1];
 
                     if (origin.compareTo(start) < 0) {
                         segments.add(new LineSegment(origin, end));
                     }
                 }
+
+                offset = k - j;
             }
         }
     }
 
-    private int adjacentCollinearPoints(final Point[] sorted, final Point origin, final double slope, int start) {
-
-        int index = start;
-
-        while (index < sorted.length) {
-
-            final double d2 = origin.slopeTo(sorted[index]);
-
-            if (Double.compare(d2, Double.NEGATIVE_INFINITY) == 0) {
-                throw new IllegalArgumentException();
-            }
-
-            if (Double.compare(slope, d2) != 0)
-                break;
-
-            index++;
-        }
-
-        return index - start + 1;
-    }
 
     public int numberOfSegments() {
         return segments.size();

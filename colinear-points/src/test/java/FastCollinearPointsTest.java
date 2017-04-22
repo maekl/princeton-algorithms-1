@@ -1,6 +1,8 @@
+import com.pholser.junit.quickcheck.Property;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,12 +29,55 @@ public class FastCollinearPointsTest extends CollinearTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void constructorThrowsIAEIfPointsAreRepeated2() {
+
+        final List<Point> points = new ArrayList<>(
+                Arrays.asList(
+                        point(27039, 21985),
+                        point(11481, 20878),
+                        point(27039, 21985),
+                        point(17443, 7822),
+                        point(5446, 7822)
+                )
+        );
+
+
+        Collections.shuffle(points);
+
+
+        new FastCollinearPoints(points.toArray(new Point[points.size()]));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorThrowsIAEIfPointsAreRepeated3() {
+        List<Point> points = Arrays.asList(
+                point(13837, 8278),
+                point(547, 29344),
+                point(547, 29344)
+        );
+
+        Collections.shuffle(points);
+
+        new FastCollinearPoints(points.toArray(new Point[points.size()]));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorThrowsIAEIfPointsAreRepeated4() {
         new FastCollinearPoints(new Point[]{
-                point(27039, 21985),
-                point(11481, 20878),
-                point(27039, 21985),
-                point(17443, 7822),
-                point(5446, 7822)});
+                point(30122, 32094),
+                point(2604, 29481),
+                point(2604, 29481)
+        });
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorThrowsIAEIfPointsAreRepeated5() {
+        new FastCollinearPoints(new Point[]{
+                point(26612, 19929),
+                point(26612, 19929)
+
+        });
     }
 
     @Test

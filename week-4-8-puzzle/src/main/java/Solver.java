@@ -17,13 +17,11 @@ public class Solver {
      */
     public Solver(final Board initial) {
 
-        final PuzzleInstances puzzle = new PuzzleInstances(initial);
+        final Puzzle puzzle = new Puzzle(initial);
 
-        while (puzzle.search()) {
-            puzzle.expandSearchToNeighbors();
-        }
+        final SearchNode solution = solve(puzzle);
 
-        this.solution = puzzle.solution();
+        this.solution = isSolution(initial, solution) ? solution : null;
     }
 
     /**
@@ -64,26 +62,31 @@ public class Solver {
         return steps;
     }
 
-    public static void main(final String[] args) {
-        // create initial board from file
-        final In in = new In(args[0]);
-        final int n = in.readInt();
-        final int[][] tiles = new int[n][n];
+    private boolean isSolution(final Board initial, final SearchNode solution) {
+        return initial(solution).equals(initial);
+    }
 
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                tiles[i][j] = in.readInt();
+    private static Board initial(final SearchNode solution) {
 
-        final Board initial = new Board(tiles);
-        final Solver solver = new Solver(initial);
+        final Iterator<Board> node = solution.iterator();
 
-        if (!solver.isSolvable())
-            StdOut.println("No solution possible");
-        else {
-            StdOut.println("Minimum number of moves = " + solver.moves());
-            for (final Board board : solver.solution())
-                StdOut.println(board);
+        while (true) {
+            final Board current = node.next();
+            if (!node.hasNext()) {
+                return current;
+            }
         }
+    }
+
+    private SearchNode solve(final Puzzle puzzle) {
+
+        SearchNode solution;
+
+        while ((solution = puzzle.search()) == null) {
+            puzzle.searchNeighbors();
+        }
+
+        return solution;
     }
 
     private static final class SearchNode implements Comparable<SearchNode>, Iterable<Board> {
@@ -163,31 +166,6 @@ public class Solver {
         }
     }
 
-
-    private static final class PuzzleInstances {
-
-        private final Puzzle puzzle;
-        private final Puzzle twin;
-
-        private PuzzleInstances(final Board board) {
-            puzzle = new Puzzle(board);
-            twin = new Puzzle(board.twin());
-        }
-
-        private void expandSearchToNeighbors() {
-            puzzle.searchNeighbors();
-            twin.searchNeighbors();
-        }
-
-        private boolean search() {
-            return !puzzle.search() && !twin.search();
-        }
-
-        private SearchNode solution() {
-            return puzzle.isGoal() ? puzzle.current : null;
-        }
-    }
-
     private static final class Puzzle {
 
         private final MinPQ<SearchNode> queue = new MinPQ<>();
@@ -195,6 +173,7 @@ public class Solver {
 
         private Puzzle(final Board board) {
             this.current = new SearchNode(board);
+            queue.insert(new SearchNode(this.current.board.twin()));
             queue.insert(this.current);
         }
 
@@ -212,10 +191,10 @@ public class Solver {
             return current.board.manhattan() == 0;
         }
 
-        private boolean search() {
+        private SearchNode search() {
             this.current = queue.delMin();
 
-            return isGoal();
+            return isGoal() ? this.current : null;
         }
     }
 }
